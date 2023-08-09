@@ -59,6 +59,22 @@ RETURNING
 	return &res, err
 }
 
+func Update(db *sql.DB, id int) error {
+	var res = User{Name: "Otabek", LastName: "Toshmukhammedov", Age: 25, Phone: "1234567" }
+	query:= "UPDATE users SET first_name=?, last_name=?, age=?, phone=? WHERE id=?"
+	_, err := db.Exec(query, res.Name, res.LastName, res.Age, res.Phone, 2  )
+	CheckError("Update Error:", err)
+	return err
+} 
+
+func Delete(db *sql.DB, Id int) error  {
+	query := "DELETE FROM users WHERE id=?"
+	_, err := db.Exec(query, Id)
+	CheckError("Delete Error", err)
+	return nil
+	
+}
+
 func Get(db *sql.DB, id int) (*User, error) {
 	query := `
 SELECT id, first_name, last_name, age, phone FROM users WHERE id=?`
