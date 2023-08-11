@@ -5,18 +5,70 @@ import (
 	"github.com/mariadb_golang/models"
 )
 
-type Storage struct {
-	db *sql.DB
-}
-
-func NewUser(db *sql.DB) *Storage {
-	return &Storage{
-		db: db,
+func CreateBranch(db *sql.DB, req models.BranchReq) (models.BranchRes, error) {
+	var res models.BranchRes
+	query := `INSERT INTO branchs(name, addresses) VALUES(?, ?) RETURNING id, name, addresses`
+	err := db.QueryRow(query, req.Name, req.Address).Scan(&res.Id, &res.Name, &res.Address)
+	if err != nil {
+		return models.BranchRes{}, err
 	}
+	return res, nil
 }
 
-func (r *Storage) CreateUser(req *models.User) error {
-	err := r.db.QueryRow()
+func GetBranch(db *sql.DB, id int) (models.BranchRes, error) {
+	var res models.BranchRes
+	query := `SELECT id, name, addresses FROM branchs WHERE id=?`
+	err := db.QueryRow(query, id).Scan(&res.Id, &res.Name, &res.Address)
+	if err != nil {
+		return models.BranchRes{}, err
+	}
+	return res, nil
+}
+
+func UpdateBranch(db *sql.DB, req models.BranchRes) error {
+	query := `UPDATE branchs SET name=?, addresses=? WHERE id=?`
+	_, err := db.Exec(query, req.Name, req.Address, req.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetBranchList(db *sql.DB) ([]models.BranchRes, error) {
+	var res []models.BranchRes
+	query := `SELECT id, name, addresses FROM branchs`
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		temp := models.BranchRes{}
+		err = rows.Scan(&temp.Id, &temp.Name, &temp.Address)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, temp)
+	}
+	return res, nil
+
+}
+
+func GetBranchParams(db *sql.DB, key string) ([]models.BranchRes, error) {
+	var res []models.BranchRes
+	query := `SELECT id, name, addresses FROM branchs WHERE name LIKE ?`
+	rows, err := db.Query(query, "%"+key+"%")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		temp := models.BranchRes{}
+		err = rows.Scan(&temp.Id, &temp.Name, &temp.Address)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, temp)
+	}
+	return res, nil
 }
 
 func Create(db *sql.DB, req *models.User) (*models.User, error) {
