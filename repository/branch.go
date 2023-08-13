@@ -14,7 +14,7 @@ func CreateBranch(data models.Branch) error {
 	db , err := db.InitDB()
 	helpers.CheckError(err)
 	defer db.Close()
-	query := "INSERT INTO branch (name, address) VALUES(?,?)"
+	query := "INSERT INTO branches (name, addresses) VALUES(?,?)"
 	_,err = db.Exec(query, data.Addresses, data.Name)
 	helpers.CheckError(err)
 	return nil
@@ -24,7 +24,7 @@ func UpdateBranch( data models.Branch, Id int) error {
 	db , err := db.InitDB()
 	helpers.CheckError(err)
 	defer db.Close()
-	query := `UPDATE branch SET name=? , address=? WHERE id=?`
+	query := `UPDATE branches SET name=? , addresses=? WHERE id=?`
 	_,err = db.Exec(query, data.Name, data.Name, Id) 
 	helpers.CheckError(err)
 	return nil
@@ -34,7 +34,7 @@ func GetAllBranches()([]models.Branch, error){
 	db, err := db.InitDB()
 	helpers.CheckError(err)
 	defer db.Close()
-	query := `SELECT * FROM branch`
+	query := `SELECT * FROM branches`
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func GetBranchById(id int) (models.Branch, error) {
 		return models.Branch{}, err
 	}
 	defer db.Close()
-	query := `SELECT * FROM branch WHERE id=?`
+	query := `SELECT * FROM branches WHERE id=?`
 	var branch models.Branch
 	row := db.QueryRow(query, id)
 	err = row.Scan(&branch.ID, &branch.Name, &branch.Addresses)
@@ -74,7 +74,7 @@ func GetAllBranchEmployees(id int) ([]models.Employee, error){
 		return nil, err
 	}
 	defer db.Close()
-	query := `SELECT e.* FROM employees AS e JOIN branch AS b ON e.branch_id = b.id WHERE b.id =?`
+	query := `SELECT e.* FROM employees AS e JOIN branches AS b ON e.branch_id = b.id WHERE b.id =?`
 	rows, err := db.Query(query, id)
 	defer rows.Close()
 	var Employees []models.Employee
@@ -94,7 +94,7 @@ func GetAllBranchStudents(id int) ([]models.Student, error){
 		return nil, err
 	}
 	defer db.Close()
-	query := `SELECT s.* FROM students AS s JOIN branch AS b ON s.branch_id = b.id WHERE b.id =?`
+	query := `SELECT s.* FROM students AS s JOIN branches AS b ON s.branch_id = b.id WHERE b.id =?`
 	rows, err := db.Query(query, id)
 	defer rows.Close()
 	var Students []models.Student
@@ -115,7 +115,7 @@ func GetAllBrachCourse(id int) ([]models.Course, error){
 		return nil , err
 	}
 	defer db.Close()
-	query := `SELECT c.* FROM course AS c JOIN branch AS b ON c.branch_id = b.id WHERE b.id =?`
+	query := `SELECT c.* FROM course AS c JOIN branches AS b ON c.branch_id = b.id WHERE b.id =?`
 	rows, err := db.Query(query, id )
 	if err != nil {
 		return  nil , err
@@ -137,7 +137,7 @@ func DeleteBranch(id int) error{
 	db, err := db.InitDB()
 	helpers.CheckError(err)
 	defer db.Close()
-	query := `DELETE FROM branch WHERE id = ?`
+	query := `DELETE FROM branches WHERE id = ?`
 
 	_,err = db.Exec(query, id)
 	helpers.CheckError(err)

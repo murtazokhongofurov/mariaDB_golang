@@ -49,5 +49,7 @@ func GetById(w http.ResponseWriter, r *http.Request){
 func Delete(w http.ResponseWriter, r *http.Request){
 	id, err := GetIDFromRoute(r)
 	RespondWithError(w, err.Error(), err)
-	
+	err = repository.DeleteEmployee(id)
+	RespondWithError(w, err.Error(), err)
+	RestSuccess(w, "Employee Successfully deleted")
 }

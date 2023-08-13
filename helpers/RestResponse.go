@@ -35,6 +35,7 @@ func RespondWithError(w http.ResponseWriter, message string, err error) {
 
         errJSON, _ := json.Marshal(errResponse)
         _, _ = w.Write(errJSON)
+        return
     }
 }
 

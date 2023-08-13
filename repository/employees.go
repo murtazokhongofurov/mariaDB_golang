@@ -68,3 +68,13 @@ func GetEmployeeById(id int) (models.Employee, error) {
 	return employee, nil
 }
 
+func DeleteEmployee(id int) error{
+	db, err := db.InitDB()
+	helpers.CheckError(err)
+	defer db.Close()
+	query := `DELETE FROM employee WHERE id= ?`
+	_, err = db.Exec(query, id)
+	helpers.CheckError(err)
+	return nil
+
+}
